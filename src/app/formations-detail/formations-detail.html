@@ -1,0 +1,74 @@
+<div class="detail-container" *ngIf="formation; else notFound">
+  <div class="back-link">
+    <a routerLink="/formations">&lt; Retour aux formations</a>
+  </div>
+
+  <div class="detail-header">
+    <h1>{{ formation.titre }}</h1>
+    <div class="header-info">
+      <span class="charge-horaire">⏱ {{ formation.chargeHoraire }} heures</span>
+    </div>
+  </div>
+
+  <div class="detail-content">
+    <section class="description-section">
+      <h2>Description</h2>
+      <p>{{ formation.description }}</p>
+    </section>
+
+    <section class="programme-section">
+      <h2>Programme de formation</h2>
+      <button class="btn btn-download" (click)="downloadPDF()">
+        ▼ Télécharger le programme PDF
+      </button>
+      <p class="programme-text">{{ formation.programme }}</p>
+    </section>
+
+    <section class="sessions-section">
+      <h2>Sessions à venir</h2>
+      <div *ngIf="sessions.length > 0; else noSessions" class="sessions-list">
+        <div *ngFor="let session of sessions" class="session-card">
+          <div class="session-header">
+            <h3>Session du {{ session.dateDebut | date:'d MMMM yyyy' }} au {{ session.dateFin | date:'d MMMM yyyy' }}</h3>
+          </div>
+          <div class="session-details">
+            <div class="detail-row">
+              <span class="label">◆ Durée:</span>
+              <span class="value">{{ session.dateDebut | date:'shortDate' }} - {{ session.dateFin | date:'shortDate' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">◆ Formateurs:</span>
+              <span class="value">{{ getFormateurNames(session.formateurs) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">◆ Places disponibles:</span>
+              <span class="value">{{ getNbCandidats(session.id) }} / {{ session.capaciteMax }}</span>
+            </div>
+          </div>
+          <div class="session-actions">
+            <a 
+              [routerLink]="['/inscription', session.id]"
+              [class.disabled]="isSessionFull(session.id)"
+              class="btn btn-primary"
+            >
+              {{ isSessionFull(session.id) ? 'Session complète' : "S'inscrire" }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <div class="not-found">
+    <h1>Formation non trouvée</h1>
+    <a routerLink="/formations" class="btn btn-primary">Retour aux formations</a>
+  </div>
+</ng-template>
+
+<ng-template #noSessions>
+  <div class="no-sessions">
+    <p>Aucune session disponible pour cette formation.</p>
+  </div>
+</ng-template>

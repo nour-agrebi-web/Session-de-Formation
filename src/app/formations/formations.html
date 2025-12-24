@@ -1,0 +1,39 @@
+<div class="formations-container">
+  <div class="search-section">
+    <h1>Nos Formations</h1>
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Rechercher une formation par mot-clé..." 
+        [(ngModel)]="searchKeyword"
+        (keyup)="onSearch()"
+        class="search-input"
+      >
+    </div>
+  </div>
+
+  <div class="formations-grid" *ngIf="filteredFormations.length > 0; else noResults">
+    <div *ngFor="let formation of filteredFormations" class="formation-card">
+      <div class="card-content">
+        <h2>{{ formation.titre }}</h2>
+        <p class="description">{{ formation.description }}</p>
+        <div class="formation-info">
+          <span class="charge-horaire">
+            ⏱ {{ formation.chargeHoraire }}h
+          </span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <a [routerLink]="['/formations', formation.id]" class="btn btn-secondary">
+          Voir les détails
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noResults>
+    <div class="no-results">
+      <p>Aucune formation ne correspond à votre recherche.</p>
+    </div>
+  </ng-template>
+</div>

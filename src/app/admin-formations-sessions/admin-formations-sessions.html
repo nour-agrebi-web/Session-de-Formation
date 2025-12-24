@@ -1,0 +1,161 @@
+<div class="admin-fs-container">
+  <h1>Gestion des Formations & Sessions</h1>
+
+  <div class="content-layout">
+    <!-- Formations List -->
+    <div class="formations-panel">
+      <div class="panel-header">
+        <h2>Formations</h2>
+        <button class="btn btn-primary btn-small" (click)="onAddFormation()">+ Ajouter</button>
+      </div>
+
+      <div class="formations-list-container">
+        <div *ngIf="formations.length > 0; else noFormations" class="list">
+          <div 
+            *ngFor="let formation of formations"
+            class="list-item"
+            [class.active]="selectedFormation?.id === formation.id"
+            (click)="selectFormation(formation)"
+          >
+            <h3>{{ formation.titre }}</h3>
+            <p class="charge">{{ formation.chargeHoraire }}h</p>
+            <div class="item-actions">
+              <button class="btn-icon" (click)="onEditFormation(formation); $event.stopPropagation()">✎</button>
+              <button class="btn-icon" (click)="onDeleteFormation(formation.id); $event.stopPropagation()">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noFormations>
+          <div class="no-data">Aucune formation</div>
+        </ng-template>
+      </div>
+
+      <!-- Formation Form -->
+      <div *ngIf="showFormationForm" class="modal-overlay" (click)="closeFormationForm()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <h3>{{ editingFormationId ? 'Modifier' : 'Ajouter une' }} formation</h3>
+          <form [formGroup]="formationForm" (ngSubmit)="onSaveFormation()" class="form">
+            <div class="form-group">
+              <label>Titre *</label>
+              <input type="text" formControlName="titre" class="form-control" placeholder="Titre de la formation">
+            </div>
+            <div class="form-group">
+              <label>Description *</label>
+              <textarea formControlName="description" class="form-control" rows="3" placeholder="Description"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Charge Horaire *</label>
+              <input type="number" formControlName="chargeHoraire" class="form-control" placeholder="Nombre d'heures">
+            </div>
+            <div class="form-group">
+              <label>Programme</label>
+              <input type="text" formControlName="programme" class="form-control" placeholder="Programme">
+            </div>
+            <div class="modal-actions">
+              <button type="submit" class="btn btn-primary">Enregistrer</button>
+              <button type="button" class="btn btn-secondary" (click)="closeFormationForm()">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sessions List -->
+    <div class="sessions-panel">
+      <div class="panel-header">
+        <h2>Sessions</h2>
+        <button class="btn btn-primary btn-small" (click)="onAddSession()" [disabled]="!selectedFormation">+ Ajouter</button>
+      </div>
+
+      <div *ngIf="selectedFormation" class="formation-info">
+        <h3>{{ selectedFormation.titre }}</h3>
+        <p>{{ selectedFormation.description }}</p>
+      </div>
+
+      <div class="sessions-list-container">
+        <div *ngIf="selectedFormation && getFormationSessions(selectedFormation.id).length > 0; else noSessions" class="list">
+          <div 
+            *ngFor="let session of getFormationSessions(selectedFormation.id)"
+            class="list-item"
+            [class.active]="selectedSession?.id === session.id"
+            (click)="selectSession(session)"
+          >
+            <h3>{{ session.dateDebut | date:'d MMM' }} - {{ session.dateFin | date:'d MMM' }}</h3>
+            <p class="places">{{ session.candidats.length }}/{{ session.capaciteMax }} candidats</p>
+            <div class="item-actions">
+              <button class="btn-icon" (click)="onEditSession(session); $event.stopPropagation()">✎</button>
+              <button class="btn-icon" (click)="onDeleteSession(session.id); $event.stopPropagation()">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noSessions>
+          <div class="no-data">{{ selectedFormation ? 'Aucune session pour cette formation' : 'Sélectionnez une formation' }}</div>
+        </ng-template>
+      </div>
+
+      <!-- Session Form -->
+      <div *ngIf="showSessionForm" class="modal-overlay" (click)="closeSessionForm()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <h3>{{ editingSessionId ? 'Modifier' : 'Ajouter une' }} session</h3>
+          <form [formGroup]="sessionForm" (ngSubmit)="onSaveSession()" class="form">
+            <div class="form-group">
+              <label for="dateDebut">Date de début *</label>
+              <input type="date" id="dateDebut" formControlName="dateDebut" class="form-control" title="Date de début">
+            </div>
+            <div class="form-group">
+              <label for="dateFin">Date de fin *</label>
+              <input type="date" id="dateFin" formControlName="dateFin" class="form-control" title="Date de fin">
+            </div>
+            <div class="form-group">
+              <label for="formateurs">Formateurs *</label>
+              <select id="formateurs" formControlName="formateurs" multiple class="form-control" title="Sélectionnez les formateurs">
+                <option *ngFor="let formateur of formateurs" [value]="formateur.id">
+                  {{ formateur.prenom }} {{ formateur.nom }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Capacité Max *</label>
+              <input type="number" formControlName="capaciteMax" class="form-control" placeholder="15">
+            </div>
+            <div class="modal-actions">
+              <button type="submit" class="btn btn-primary">Enregistrer</button>
+              <button type="button" class="btn btn-secondary" (click)="closeSessionForm()">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Candidates List -->
+    <div class="candidates-panel">
+      <div class="panel-header">
+        <h2>Candidats inscrits</h2>
+      </div>
+
+      <div *ngIf="selectedSession" class="session-info">
+        <h3>{{ selectedSession.dateDebut | date:'d MMMM yyyy' }} - {{ selectedSession.dateFin | date:'d MMMM yyyy' }}</h3>
+        <p>Total: {{ sessionCandidats.length }} candidats</p>
+      </div>
+
+      <div class="candidates-list-container">
+        <div *ngIf="selectedSession && sessionCandidats.length > 0; else noCandidates" class="list">
+          <div *ngFor="let candidat of sessionCandidats" class="candidate-item">
+            <div class="candidate-info">
+              <h4>{{ candidat.prenom }} {{ candidat.nom }}</h4>
+              <p>{{ candidat.email }}</p>
+              <small class="date">Inscrit le: {{ candidat.dateInscription | date:'d/M/yyyy' }}</small>
+            </div>
+            <button class="btn-icon delete" (click)="deleteCandidat(candidat.id)">✕</button>
+          </div>
+        </div>
+
+        <ng-template #noCandidates>
+          <div class="no-data">{{ selectedSession ? 'Aucun candidat inscrit' : 'Sélectionnez une session' }}</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

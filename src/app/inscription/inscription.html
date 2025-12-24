@@ -1,0 +1,103 @@
+<div class="inscription-container" *ngIf="formation && session; else notFound">
+  <div class="back-link">
+    <a (click)="retourFormation()" class="back-button">&lt; Retour</a>
+  </div>
+
+  <div class="inscription-header">
+    <h1>Inscription à une session</h1>
+    <div class="session-info">
+      <h2>{{ formation.titre }}</h2>
+      <p>Session du {{ session.dateDebut | date:'d MMMM yyyy' }} au {{ session.dateFin | date:'d MMMM yyyy' }}</p>
+      <p class="places-info">Places disponibles: {{ session.candidats.length }} / {{ session.capaciteMax }}</p>
+    </div>
+  </div>
+
+  <div class="inscription-content">
+    <div *ngIf="inscriptionSuccess" class="success-message">
+      <div class="success-content">
+        <h3>✓ Inscription réussie!</h3>
+        <p>Vous serez redirigé vers la page de formation dans quelques secondes...</p>
+      </div>
+    </div>
+
+    <form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()" *ngIf="!inscriptionSuccess" class="inscription-form">
+      <div class="form-group">
+        <label for="nom">Nom *</label>
+        <input 
+          type="text" 
+          id="nom" 
+          formControlName="nom"
+          class="form-control"
+          [class.is-invalid]="nom?.invalid && (nom?.dirty || submitted)"
+          placeholder="Entrez votre nom"
+        >
+        <div class="error-message" *ngIf="nom?.invalid && (nom?.dirty || submitted)">
+          <small *ngIf="nom?.errors?.['required']">Le nom est requis</small>
+          <small *ngIf="nom?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="prenom">Prénom *</label>
+        <input 
+          type="text" 
+          id="prenom" 
+          formControlName="prenom"
+          class="form-control"
+          [class.is-invalid]="prenom?.invalid && (prenom?.dirty || submitted)"
+          placeholder="Entrez votre prénom"
+        >
+        <div class="error-message" *ngIf="prenom?.invalid && (prenom?.dirty || submitted)">
+          <small *ngIf="prenom?.errors?.['required']">Le prénom est requis</small>
+          <small *ngIf="prenom?.errors?.['minlength']">Le prénom doit contenir au moins 2 caractères</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="email?.invalid && (email?.dirty || submitted)"
+          placeholder="Entrez votre email"
+        >
+        <div class="error-message" *ngIf="email?.invalid && (email?.dirty || submitted)">
+          <small *ngIf="email?.errors?.['required']">L'email est requis</small>
+          <small *ngIf="email?.errors?.['email']">Veuillez entrer un email valide</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="isSessionFull"
+        >
+          {{ isSessionFull ? 'Session complète' : "S'inscrire" }}
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="retourFormation()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="isSessionFull && !inscriptionSuccess" class="session-full-message">
+      <h3>Session complète</h3>
+      <p>La session à laquelle vous tentiez de vous inscrire est malheureusement complète.</p>
+      <p>Veuillez choisir une autre session disponible.</p>
+    </div>
+  </div>
+</div>
+
+<ng-template #notFound>
+  <div class="not-found">
+    <h1>Session non trouvée</h1>
+    <a routerLink="/formations" class="btn btn-primary">Retour aux formations</a>
+  </div>
+</ng-template>

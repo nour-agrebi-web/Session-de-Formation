@@ -1,0 +1,52 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Espace d'Administration</h1>
+    <p>Gestion des formations, sessions et formateurs</p>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <nav class="admin-menu">
+        <h3>Menu Administration</h3>
+        <ul>
+          <li>
+            <a routerLink="/admin-space/formateurs" routerLinkActive="active" class="menu-item">
+              � Gestion des Formateurs
+            </a>
+          </li>
+          <li>
+            <a routerLink="/admin-space/formations-sessions" routerLinkActive="active" class="menu-item">
+              📋 Gestion des Formations & Sessions
+            </a>
+          </li>
+          <li>
+            <a routerLink="/" class="menu-item">
+              ← Retour au site public
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="admin-content">
+      <div class="welcome-message">
+        <h2>Bienvenue dans l'espace d'administration</h2>
+        <p>Sélectionnez une option dans le menu pour commencer la gestion des contenus.</p>
+        <div class="admin-features">
+          <div class="feature">
+            <h3>👤 Gestion des Formateurs</h3>
+            <p>Ajouter, modifier ou supprimer des formateurs</p>
+          </div>
+          <div class="feature">
+            <h3>📋 Gestion des Formations</h3>
+            <p>Ajouter, modifier ou supprimer des formations et sessions</p>
+          </div>
+          <div class="feature">
+            <h3>📊 Visualisation des Candidats</h3>
+            <p>Voir les candidats inscrits à chaque session</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
